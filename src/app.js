@@ -3,13 +3,11 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { toNodeHandler } from "better-auth/node";
 
 import { env } from "#config";
 import { apiV1Router } from "#routes";
 import { handleReqErrors, NotFoundError } from "#errors";
 import { requestLogger } from "#utils";
-import { auth } from "#lib";
 
 
 // console.log(env);

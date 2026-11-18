@@ -50,6 +50,15 @@ npm run dev
 openssl rand -base64 32
 ```
 
-```sh
-npx auth@latest migrate --config src/lib/auth.lib.js
+### how to do database / schema migration in postgres
+1. turn on the postgres docker container 
+2. login to postgres : psql "postgresql://blue:postgres_pw_1234@localhost:5432/auth_saas_db"
+3. run this in postgres shell : \i src/db/migrations/001_final_schema.sql
+
+For resetting a database to test updated schema migrations during development, wiping the public schema is the fastest and cleanest approach. It avoids dropping the database itself and keeps your active psql connection open.
+
+```sql
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+\i src/db/migrations/001_final_schema.sql
 ```
