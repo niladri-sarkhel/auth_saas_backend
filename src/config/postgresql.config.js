@@ -11,11 +11,11 @@ export const pool = new Pool({
 // Test the connection pool and register event listeners
 export const connectPostgreSQL = async () => {
     try {
-        logger.info("Connecting to PostgreSQL...");
+        logger.info("⏳ Connecting to PostgreSQL...");
 
         // Test connection checkout
         const client = await pool.connect();
-        logger.info("PostgreSQL connected successfully");
+        logger.info("✅ PostgreSQL connected successfully");
         client.release(); // Release client back to the pool
 
         return pool;

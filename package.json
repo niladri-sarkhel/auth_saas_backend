@@ -9,7 +9,8 @@
     "start": "node --env-file=.env.production index.js",
     "test": "vitest run",
     "test:watch": "vitest",
-    "generate:env": "env-example-gen -i .env.dev -o .env.example"
+    "generate:env": "env-example-gen -i .env.dev -o .env.example",
+    "seed": "node scripts/seed.scripts.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

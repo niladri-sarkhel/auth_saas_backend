@@ -3,7 +3,7 @@
 import http from "node:http";
 import { app } from "#app";
 import { logger } from "#utils";
-import { connectPostgreSQL, disconnectPostgreSQL } from "#config";
+import { connectPostgreSQL, disconnectPostgreSQL, connectRedis, disconnectRedis } from "#config";
 
 export const startServer = async ({ port, appName, appUrl }) => {
     const httpServer = http.createServer(app);
@@ -56,6 +56,7 @@ export const startServer = async ({ port, appName, appUrl }) => {
         try {
             // Gracefully close PostgreSQL pool
             await disconnectPostgreSQL();
+            await disconnectRedis();
         } catch (dbErr) {
             logger.error({ err: dbErr }, "Error closing PostgreSQL connection");
         }
@@ -87,6 +88,7 @@ export const startServer = async ({ port, appName, appUrl }) => {
     try {
         // Initialize PostgreSQL connection pool before starting server listener
         await connectPostgreSQL();
+        await connectRedis();
 
         httpServer.listen(port, "0.0.0.0");
     } catch (error) {

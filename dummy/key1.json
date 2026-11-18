@@ -1,0 +1,12 @@
+{
+    "keys": [
+        {
+            "kty": "RSA",
+            "n": "57eGCqtM8m_PL-BdOZbwdPCNet4BmPDVLAt-yzoTJ3lJtoOEl4oWv6toGtF5ZSJnGOdnAusVQ3_SbAq3iTv2T3wwSieGgD7HTnFp9ghy3mc5o6Y8ooSqQBYrcoEyU2ZVh8aGq-hJVeUgDEzmkP8GOZp9sp69uazD2nZi9579Q_qTAsz5ahFIREj-J4XtrmlVJ5MLhiiIH98lXiOJsLk0T9z4ZuImB7rGotCoJAC3r39pkZLT-eD03WvxlNRvKTxdtRmal10D9RKbU6Rjae78tJX4jwFpmpeVMVW4a8rRSzTDUsVv87ctuhCo9L2Xzad-mtXmcWufajE2ATiyNimw2w",
+            "e": "AQAB",
+            "kid": "auth-saas-key-1",
+            "alg": "RS256",
+            "use": "sig"
+        }
+    ]
+}
