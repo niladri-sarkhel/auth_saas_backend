@@ -1,9 +1,9 @@
 name: ${APP_NAME:-auth_saas}
 
 services:
-  # nodejs server configuration
+  # Node.js backend server configuration
   nodejs:
-    image: node:26-alpine
+    image: node:24-alpine
     container_name: ${APP_NAME:-auth_saas}_nodejs
     user: "${UID:-1000}:${GID:-1000}"
     working_dir: /app
@@ -21,14 +21,18 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      mailpit:     
+      redis:
+        condition: service_healthy
+      mailpit:
         condition: service_started
 
-  # postgresql server configuration
+  # PostgreSQL 18 database server configuration
   postgres:
-    image: postgres:latest
+    image: postgres:18-alpine
     container_name: ${APP_NAME:-auth_saas}_postgres
     restart: unless-stopped
+    env_file:
+      - .env.dev
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     environment:
@@ -40,17 +44,19 @@ services:
     networks:
       - backend_net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
       start_period: 5s
 
-  # redis db server configuration
+  # Redis in-memory store configuration
   redis:
     image: redis:7-alpine
     container_name: ${APP_NAME:-auth_saas}_redis
     restart: unless-stopped
+    env_file:
+      - .env.dev
     ports:
       - "${REDIS_PORT:-6379}:6379"
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
@@ -58,19 +64,24 @@ services:
       - redis_data:/data
     networks:
       - backend_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
-  # mailpit local email testing configuration
+  # Mailpit local SMTP & email testing UI
   mailpit:
     image: axllent/mailpit:latest
     container_name: ${APP_NAME:-auth_saas}_mailpit
     restart: unless-stopped
     ports:
-      - "8025:8025" # Web UI port
-      - "1025:1025" # SMTP server port
+      - "8025:8025" # Web UI
+      - "1025:1025" # SMTP server
     networks:
-      - backend_net     
-  
-  # lightweight postgres database client web ui
+      - backend_net
+
+  # Lightweight PostgreSQL database web UI
   adminer:
     image: adminer:latest
     container_name: ${APP_NAME:-auth_saas}_adminer
@@ -79,7 +90,10 @@ services:
       - "8080:8080"
     networks:
       - backend_net
-      
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   postgres_data:
     name: ${APP_NAME:-auth_saas}_postgres_data
