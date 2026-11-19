@@ -111,6 +111,16 @@ export class ValidationError extends AppError {
     }
 }
 
+export class TooManyRequestsError extends AppError {
+    constructor({
+        message = "Too many requests, please try again later",
+        errors = [],
+        stack = null,
+    } = {}) {
+        super({ message, statusCode: 429, errors, stack });
+    }
+}
+
 export class MailServiceError extends AppError {
     constructor({
         message = "Failed to send email transmission",
@@ -205,17 +215,22 @@ export const normalizeError = (err) => {
         });
     }
 
-    // 7. JWT Signature Error
-    if (err.name === "JsonWebTokenError") {
+    // 7. JWT Signature / JOSE Error
+    if (
+        err.name === "JsonWebTokenError" ||
+        err.code === "ERR_JWS_INVALID" ||
+        err.code === "ERR_JWS_SIGNATURE_VERIFICATION_FAILED" ||
+        err.code === "ERR_JWT_CLAIM_VALIDATION_FAILED"
+    ) {
         return new UnauthorizedError({
             message: "Invalid authentication token",
-            errors: ["Provided JWT token signature is invalid"],
+            errors: ["Provided JWT token signature or claims are invalid"],
             stack: rawStack,
         });
     }
 
-    // 8. JWT Expiration Error
-    if (err.name === "TokenExpiredError") {
+    // 8. JWT Expiration Error (jsonwebtoken + jose)
+    if (err.name === "TokenExpiredError" || err.code === "ERR_JWT_EXPIRED") {
         return new UnauthorizedError({
             message: "Token has expired",
             errors: ["JWT token has expired, please log in again"],

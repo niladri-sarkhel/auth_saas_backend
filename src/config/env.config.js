@@ -67,7 +67,13 @@ const envSchema = joi.object({
 
     SMTP_FROM: joi.string().required(),
 
-    OTP_TTL_SECONDS: joi.number().integer().default(300),
+    OTP_TTL_SECONDS: joi.number().integer().positive().default(300),
+
+    REFRESH_TTL_SECONDS: joi.number().integer().positive().default(604800),
+
+    DUMMY_PASSWORD_HASH: joi.string().required(),
+
+    REFRESH_COOKIE_NAME: joi.string().default("refresh_token"),
 });
 
 const { value, error } = envSchema.validate(process.env, {

@@ -11,7 +11,7 @@ import { handleReqErrors, NotFoundError } from "#errors";
 import { requestLogger, getPublicJWKS } from "#utils";
 
 
-// console.log(env);
+console.log(env);
 
 export const app = express();
 app

@@ -39,14 +39,28 @@ export class MailServiceClass {
     };
 
     sendEmail = async (to, otp, subject, purposeText, expiryMinutes = 5) => {
-        const rawTemplate = await this._loadTemplate();
+        let recipient = to;
+        let mailOtp = otp;
+        let mailSubject = subject;
+        let mailPurpose = purposeText;
+        let mailExpiryMinutes = expiryMinutes;
+        let customHtml = null;
+
+        if (typeof to === "object" && to !== null) {
+            recipient = to.to;
+            mailOtp = to.otp;
+            mailSubject = to.subject;
+            mailPurpose = to.purposeText;
+            mailExpiryMinutes = to.expiryMinutes ?? 5;
+            customHtml = to.html;
+        }
 
         const appName = env.APP_NAME || "Global Marketplace";
         const currentYear = new Date().getFullYear().toString();
-        const expirationDuration = `${expiryMinutes} mins`;
+        const expirationDuration = `${mailExpiryMinutes} mins`;
 
         // 1. Calculate future expiration time using your target timezone
-        const expiryDate = new Date(Date.now() + expiryMinutes * 60 * 1000);
+        const expiryDate = new Date(Date.now() + mailExpiryMinutes * 60 * 1000);
         const expirationTime = expiryDate.toLocaleTimeString("en-US", {
             timeZone: "Asia/Kolkata", // <-- Forces IST instead of UTC
             hour: "numeric",
@@ -54,25 +68,30 @@ export class MailServiceClass {
             hour12: true,
         }).toLowerCase(); // e.g., "2:27 p.m."
 
-        // Replace all dynamic placeholders safely across the template
-        const personalizedHtml = rawTemplate
-            .replaceAll("{{APP_NAME}}", appName)
-            .replaceAll("{{OTP}}", otp)
-            .replaceAll("{{PURPOSE_TEXT}}", purposeText)
-            .replaceAll("{{EXPIRATION_DURATION}}", expirationDuration)
-            .replaceAll("{{EXPIRATION_TIME}}", expirationTime)
-            .replaceAll("{{CURRENT_YEAR}}", currentYear);
+        let htmlToSend = customHtml;
+        if (!htmlToSend) {
+            const rawTemplate = await this._loadTemplate();
+
+            // Replace all dynamic placeholders safely across the template
+            htmlToSend = rawTemplate
+                .replaceAll("{{APP_NAME}}", appName)
+                .replaceAll("{{OTP}}", mailOtp ?? "")
+                .replaceAll("{{PURPOSE_TEXT}}", mailPurpose ?? "")
+                .replaceAll("{{EXPIRATION_DURATION}}", expirationDuration)
+                .replaceAll("{{EXPIRATION_TIME}}", expirationTime)
+                .replaceAll("{{CURRENT_YEAR}}", currentYear);
+        }
 
         try {
             const deliveryReceipt = await this._transporter.sendMail({
                 from: this._fromAddress,
-                to,
-                subject,
-                html: personalizedHtml,
+                to: recipient,
+                subject: mailSubject,
+                html: htmlToSend,
             });
 
             logger.info(
-                `✅ Outbound email delivered to: ${to} | Expires at: ${expirationTime} [ID: ${deliveryReceipt.messageId}]`,
+                `✅ Outbound email delivered to: ${recipient} | Expires at: ${expirationTime} [ID: ${deliveryReceipt.messageId}]`,
             );
 
             return true;
