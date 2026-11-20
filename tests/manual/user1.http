@@ -1,0 +1,89 @@
+
+### 1. user1-signup
+# @name user1-signup
+POST {{appUrl}}/auth/signup
+x-publishable-key: pk_test_local_01
+Content-Type: application/json
+
+{
+  "email": "user.one@email.com",
+  "password": "u1_pw1234",
+  "username": "user_one",
+  "first_name": "user",
+  "last_name": "one"
+}
+
+{{
+  // Save Admin's token globally without affecting User B
+  $global.user1 = response.parsedBody.token;
+  console.log("user1 token:", $global.user1);
+}}
+
+
+### 2. user1-verify-email
+# @name user1-verify-email
+POST {{appUrl}}/auth/verify-email
+x-publishable-key: pk_test_local_01
+Content-Type: application/json
+
+{
+  "email": "user.one@email.com",
+  "otp": "323482"
+}
+
+### 3. user1-resend-otp
+# @name user1-resend-otp
+POST {{appUrl}}/auth/resend-otp
+x-publishable-key: pk_test_local_01
+Content-Type: application/json
+
+{
+  "email": "user.one@email.com"
+}
+
+### 4. user1-signin-email
+# @name user1-signin-email
+POST {{appUrl}}/auth/signin
+x-publishable-key: pk_test_local_01
+Content-Type: application/json
+
+{
+  "identifier": "user.one@email.com",
+  "password": "u1_pw1234"
+}
+
+{{
+  // Save Admin's token globally without affecting User B
+  $global.user1 = response.parsedBody.token;
+  console.log("user1 token:", $global.user1);
+}}
+
+### 5. user1-signin-username
+# @name user1-signin-username
+POST {{appUrl}}/auth/signin
+x-publishable-key: pk_test_local_01
+Content-Type: application/json
+
+{
+  "identifier": "user.one@email.com",
+  "password": "u1_pw1234"
+}
+
+{{
+  // Save Admin's token globally without affecting User B
+  $global.user1 = response.parsedBody.token;
+  console.log("user1 token:", $global.user1);
+}}
+
+### 6. user1-signout
+# @name user1-signout
+POST {{appUrl}}/auth/signout
+x-publishable-key: pk_test_local_01
+Content-Type: application/json
+
+### 7. user1-refresh
+# @name user1-refresh
+POST {{appUrl}}/auth/refresh
+x-publishable-key: pk_test_local_01
+Content-Type: application/json
+

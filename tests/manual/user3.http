@@ -1,0 +1,88 @@
+
+### 1. user3-signup
+# @name user3-signup
+POST {{appUrl}}/auth/signup
+x-publishable-key:pk_test_local_01
+Content-Type:application/json
+
+{
+  "email": "user.three@email.com",
+  "password": "u3_pw1234",
+  "username": "user_three",
+  "first_name": "user",
+  "last_name": "three"
+}
+
+{{
+  // Save Admin's token globally without affecting User B
+  $global.user3 = response.parsedBody.token;
+  console.log("user3 token:", $global.user3);
+}}
+
+
+### 2. user3-verify-email
+# @name user3-verify-email
+POST {{appUrl}}/auth/verify-email
+x-publishable-key:pk_test_local_01
+Content-Type:application/json
+
+{
+  "email": "user.three@email.com",
+  "otp": "301201"
+}
+
+### 3. user3-resend-otp
+# @name user3-resend-otp
+POST {{appUrl}}/auth/resend-otp
+x-publishable-key:pk_test_local_01
+Content-Type:application/json
+
+{
+  "email": "user.three@email.com"
+}
+
+### 4. user3-signin-email
+# @name user3-signin-email
+POST {{appUrl}}/auth/signin
+x-publishable-key:pk_test_local_01
+Content-Type:application/json
+
+{
+  "identifier": "user.three@email.com",
+  "password": "u3_pw1234"
+}
+
+{{
+  // Save Admin's token globally without affecting User B
+  $global.user3 = response.parsedBody.token;
+  console.log("user3 token:", $global.user3);
+}}
+
+### 5. user3-signin-username
+# @name user3-signin-username
+POST {{appUrl}}/auth/signin
+x-publishable-key:pk_test_local_01
+Content-Type:application/json
+
+{
+  "identifier": "user.three@email.com",
+  "password": "u3_pw1234"
+}
+
+{{
+  // Save Admin's token globally without affecting User B
+  $global.user3 = response.parsedBody.token;
+  console.log("user3 token:", $global.user3);
+}}
+
+### 6. user3-signout
+# @name user3-signout
+POST {{appUrl}}/auth/signout
+x-publishable-key:pk_test_local_01
+Content-Type:application/json
+
+### 7. user3-refresh
+# @name user3-refresh
+POST {{appUrl}}/auth/refresh
+x-publishable-key:pk_test_local_01
+Content-Type:application/json
