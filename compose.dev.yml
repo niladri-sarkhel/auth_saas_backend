@@ -93,12 +93,32 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+        
+  # Real-time Docker container log viewer
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: ${APP_NAME:-auth_saas}_dozzle
+    restart: unless-stopped
+    ports:
+      - "${DOZZLE_PORT:-9090}:8080"
+    environment:
+      DOZZLE_NO_ANALYTICS: "true"
+      DOZZLE_TAILSIZE: "300"
+      # Optional: scope Dozzle to only this Compose project's containers
+      # DOZZLE_FILTER: "label=com.docker.compose.project=${APP_NAME:-auth_saas}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - dozzle_data:/data
+    networks:
+      - backend_net
 
 volumes:
   postgres_data:
     name: ${APP_NAME:-auth_saas}_postgres_data
   redis_data:
     name: ${APP_NAME:-auth_saas}_redis_data
+  dozzle_data:
+    name: ${APP_NAME:-auth_saas}_dozzle_data
 
 networks:
   backend_net:

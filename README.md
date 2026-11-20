@@ -62,3 +62,9 @@ DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;
 \i src/db/migrations/001_final_schema.sql
 ```
+
+### how to send logs to dozzle 
+```sh
+docker exec -it auth_saas_nodejs sh
+/app $ npm run dev | tee /proc/1/fd/1
+```

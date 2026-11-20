@@ -57,3 +57,5 @@ If your app sends "Someone tried to log into your account" alerts (like Instagra
 * Only alert on valid password + new device: Only notify the user if the attacker actually guessed the correct password (which stops at 2FA), rather than alerting on random failed guesses.
 
 Are you implementing password-based login, 2FA, or passwordless login for these usernames? Let me know if you'd like to see how to structure the database or rate-limiting logic for separating public usernames from private login identifiers.
+
+hey, do i have some kind of application to manage and see logs of my webapp ? i dont quite like to see the logs on the console ? btw how professional devs handle logs for their dev environment ? i may be wrong to remove logs from console or who knows 

@@ -1,0 +1,125 @@
+name: ${APP_NAME:-auth_saas}
+
+services:
+  # Node.js backend server configuration
+  nodejs:
+    image: node:24-alpine
+    container_name: ${APP_NAME:-auth_saas}_nodejs
+    user: "${UID:-1000}:${GID:-1000}"
+    working_dir: /app
+    volumes:
+      - ./:/app
+    env_file:
+      - .env.dev
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    stdin_open: true
+    tty: true
+    command: sh -c "tail -f /dev/null"
+    networks:
+      - backend_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+
+  # PostgreSQL 18 database server configuration
+  postgres:
+    image: postgres:18-alpine
+    container_name: ${APP_NAME:-auth_saas}_postgres
+    restart: unless-stopped
+    env_file:
+      - .env.dev
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - backend_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  # Redis in-memory store configuration
+  redis:
+    image: redis:7-alpine
+    container_name: ${APP_NAME:-auth_saas}_redis
+    restart: unless-stopped
+    env_file:
+      - .env.dev
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Mailpit local SMTP & email testing UI
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: ${APP_NAME:-auth_saas}_mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025" # Web UI
+      - "1025:1025" # SMTP server
+    networks:
+      - backend_net
+
+  # Lightweight PostgreSQL database web UI
+  adminer:
+    image: adminer:latest
+    container_name: ${APP_NAME:-auth_saas}_adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    networks:
+      - backend_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Real-time Docker container log viewer
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: ${APP_NAME:-auth_saas}_dozzle
+    restart: unless-stopped
+    ports:
+      - "${DOZZLE_PORT:-9090}:9090"
+    environment:
+      DOZZLE_NO_ANALYTICS: "true"
+      DOZZLE_TAILSIZE: "300"
+      # Optional: scope Dozzle to only this Compose project's containers
+      # DOZZLE_FILTER: "label=com.docker.compose.project=${APP_NAME:-auth_saas}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - dozzle_data:/data
+    networks:
+      - backend_net
+
+volumes:
+  postgres_data:
+    name: ${APP_NAME:-auth_saas}_postgres_data
+  redis_data:
+    name: ${APP_NAME:-auth_saas}_redis_data
+  dozzle_data:
+    name: ${APP_NAME:-auth_saas}_dozzle_data
+
+networks:
+  backend_net:
+    driver: bridge

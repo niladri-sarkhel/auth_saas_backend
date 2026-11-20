@@ -1,0 +1,44 @@
+tests/
+    manual/
+        batch1/
+            user1.http
+            user2.http
+            user3.http
+        batch2/
+            user1.http
+            user2.http
+            user3.http
+        batch3/
+            user1.http
+            user2.http
+            user3.http
+        batch4/
+            user1.http
+            user2.http
+            user3.http
+    unit/
+    integration/
+    e2e/
+    
+--- or ---    
+
+tests/
+    manual/
+        user1/
+            batch1.http
+            batch2.http
+            batch3.http
+            batch4.http
+        user2/
+            batch1.http
+            batch2.http
+            batch3.http
+            batch4.http
+        user3/
+            batch1.http
+            batch2.http
+            batch3.http
+            batch4.http
+    unit/
+    integration/
+    e2e/
