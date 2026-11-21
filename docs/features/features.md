@@ -1,28 +1,36 @@
 # user profile data
 ## public
-- first_name, last_name
-- display_name
-- profile_picture, cover_picture
 - username (public, Unique per app)
+
+- user_id
+- env_id
+- first_name 
+- last_name
+- display_name
+- profile_picture 
+- cover_picture
 - designation
 - about / bio
-- location : state, country (locale & timezone)
-- account_created_at : System-generated
+- pronouns : optional
+- date_of_birth : optional
+- state 
+- country 
+- locale 
+- timezone
 - contact_number
+- contact_number_verified
+- contact_number_verified_at
 - contact_email
 - portfolio_link
-- social_links : max 10 
 - profile_url
-- date_of_birth : optional
-- pronouns : optional
-- account_status : active / disabled / suspended / deleted
+- social_links : max 10 
 - activity_status : short text, supports emoji, max length of text 200.
-- last_active : time stamp (minutes/hours ago, or if >= 24 hours, last active on DD/MM/YYYY)
 - profile_visibility : public / private
 - verified_badge
 - accent_color
 - theme_preference
-- public_metadata (JSONB)
+- updated_at
+
 
 ## private
 - immutable id (UUID) & application_id (UUID)
@@ -40,6 +48,11 @@
 - Recovery methods
 - Security notifications
 - private_metadata (JSONB)
+
+- account_created_at : System-generated
+- account_status : active / disabled / suspended / deleted
+- last_active : time stamp (minutes/hours ago, or if >= 24 hours, last active on DD/MM/YYYY)
+- public_metadata (JSONB)
 
 # signup
 - create account with unique email and password

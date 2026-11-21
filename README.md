@@ -68,3 +68,5 @@ CREATE SCHEMA public;
 docker exec -it auth_saas_nodejs sh
 /app $ npm run dev | tee /proc/1/fd/1
 ```
+dozzle username : blue
+dozzle password : malawolf04

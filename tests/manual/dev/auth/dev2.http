@@ -1,0 +1,128 @@
+@devAuthUrl = {{appUrl}}/dev/auth
+@devEmail = dev.two@email.com
+@devPassword = d2_pw_1234
+@devNewPassword = d2_npw_1234
+
+### 1. dev1-signup-request-otp
+# @name dev1-signup-request-otp
+POST {{devAuthUrl}}/signup/request-otp
+Content-Type: application/json
+
+{
+  "email": "{{devEmail}}",
+  "password": "{{devPassword}}"
+}
+
+### 2. dev1-signup-verify-otp
+# @name dev1-signup-verify-otp
+POST {{devAuthUrl}}/signup/verify-otp
+Content-Type: application/json
+
+{
+  "email": "{{devEmail}}",
+  "otp": "650255"
+}
+
+{{
+  $global.dev1AccessToken = response.parsedBody?.data?.accessToken;
+  $global.dev1RefreshToken = response.parsedBody?.data?.refreshToken;
+  console.log("dev1 accessToken:", $global.dev1AccessToken);
+  console.log("dev1 refreshToken:", $global.dev1RefreshToken);
+}}
+
+### 3. dev1-resend-signup-otp
+# @name dev1-resend-signup-otp
+POST {{devAuthUrl}}/resend-otp
+Content-Type: application/json
+
+{
+  "purpose": "signup",
+  "email": "{{devEmail}}"
+}
+
+### 4. dev1-signin-request-otp
+# @name dev1-signin-request-otp
+POST {{devAuthUrl}}/signin/request-otp
+Content-Type: application/json
+
+{
+  "email": "{{devEmail}}",
+  "password": "{{devPassword}}"
+}
+
+{{
+  $global.dev1ChallengeId = response.parsedBody?.data?.challengeId;
+  console.log("dev1 challengeId:", $global.dev1ChallengeId);
+}}
+
+### 5. dev1-resend-signin-otp
+# @name dev1-resend-signin-otp
+POST {{devAuthUrl}}/resend-otp
+Content-Type: application/json
+
+{
+  "purpose": "signin",
+  "challengeId": "{{$global.dev1ChallengeId}}"
+}
+
+### 6. dev1-signin-verify-otp
+# @name dev1-signin-verify-otp
+POST {{devAuthUrl}}/signin/verify-otp
+Content-Type: application/json
+
+{
+  "challengeId": "{{$global.dev1ChallengeId}}",
+  "otp": "353150"
+}
+
+{{
+  $global.dev1AccessToken = response.parsedBody?.data?.accessToken;
+  $global.dev1RefreshToken = response.parsedBody?.data?.refreshToken;
+  console.log("dev1 accessToken:", $global.dev1AccessToken);
+  console.log("dev1 refreshToken:", $global.dev1RefreshToken);
+}}
+
+### 7. dev1-refresh
+# @name dev1-refresh
+POST {{devAuthUrl}}/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{$global.dev1RefreshToken}}"
+}
+
+{{
+  $global.dev1AccessToken = response.parsedBody?.data?.accessToken;
+  $global.dev1RefreshToken = response.parsedBody?.data?.refreshToken;
+  console.log("rotated dev1 accessToken:", $global.dev1AccessToken);
+  console.log("rotated dev1 refreshToken:", $global.dev1RefreshToken);
+}}
+
+### 8. dev1-signout
+# @name dev1-signout
+POST {{devAuthUrl}}/signout
+Content-Type: application/json
+
+{
+  "refreshToken": "{{$global.dev1RefreshToken}}"
+}
+
+### 9. dev1-forgot-password
+# @name dev1-forgot-password
+POST {{devAuthUrl}}/forgot-password
+Content-Type: application/json
+
+{
+  "email": "{{devEmail}}"
+}
+
+### 10. dev1-reset-password
+# @name dev1-reset-password
+POST {{devAuthUrl}}/reset-password
+Content-Type: application/json
+
+{
+  "email": "{{devEmail}}",
+  "otp": "434729",
+  "newPassword": "{{devNewPassword}}"
+}

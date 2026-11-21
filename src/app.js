@@ -31,7 +31,7 @@ app
             next(err);
         }
     })
-    .use(env.API_PREFIX, apiV1Router)
+    .use("/api/v1", apiV1Router)
     .use((req, _res, next) => {
         next(
             new NotFoundError({

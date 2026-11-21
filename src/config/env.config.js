@@ -74,6 +74,8 @@ const envSchema = joi.object({
     DUMMY_PASSWORD_HASH: joi.string().required(),
 
     REFRESH_COOKIE_NAME: joi.string().default("refresh_token"),
+
+    DOZZLE_PORT: joi.number().integer().port().default(9090),
 });
 
 const { value, error } = envSchema.validate(process.env, {

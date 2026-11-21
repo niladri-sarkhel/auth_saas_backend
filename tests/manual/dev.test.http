@@ -1,0 +1,24 @@
+
+### 1. get-db
+# @name get-db
+GET {{appUrl}}/dev/test/db
+x-publishable-key: pk_test_local_01
+Content-Type: application/json
+
+
+### 2. ping
+# @name ping
+GET {{appUrl}}/dev/test/ping
+x-publishable-key: pk_test_local_01
+Content-Type: application/json
+
+
+### 3. test-email
+# @name test-email
+POST {{appUrl}}/dev/test/test-email
+x-publishable-key: pk_test_local_01
+Content-Type: application/json
+
+{
+  "to":"niladri.sarkhel.dev@gmail.com"
+}

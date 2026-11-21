@@ -22,3 +22,31 @@ Content-Type: application/json
 {
   "to":"niladri.sarkhel.dev@gmail.com"
 }
+
+
+### 4. extract otp from email
+# @name extract-otp
+GET http://localhost:8025/api/v1/message/latest
+
+{{
+  const match = response.parsedBody.Text.match(/verification code is (\d{6})/i);
+  const otp = match ? match[1] : null;
+  console.log(otp);
+  exports.otpCode = otp; // Stores "434729"
+}}
+
+
+### 5. extract otp using function
+# @name extract-otp-using-function
+POST {{appUrl}}/test/test-email
+x-publishable-key: pk_test_local_01
+Content-Type: application/json
+
+{
+  "to":"niladri.sarkhel.dev@gmail.com"
+}
+
+{{
+  const otp = await extractEmailOTP();
+  console.log("OTP:", otp);
+}}
